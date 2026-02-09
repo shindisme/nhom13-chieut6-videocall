@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Call - Nhóm 13</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div id="join-form" class="join-section">
+            <div class="form-card">
+                <h1>Video Call</h1>
+                <p class="subtitle">Nhóm 13 - Chiều T6</p>
+
+                <div class="input-group">
+                    <label for="room-name">Tên phòng</label>
+                    <input type="text" id="room-name" placeholder="VD: phong-hop-nhom" value="nhom13">
+                </div>
+
+                <div class="input-group">
+                    <label for="user-name">Tên của bạn</label>
+                    <input type="text" id="user-name" placeholder="VD: Nguyen Van A">
+                </div>
+
+                <button id="join-btn" class="btn-primary">
+                    Tham gia phòng
+                </button>
+            </div>
+        </div>
+
+        <div id="call-section" class="call-section hidden">
+            <div class="call-header">
+                <h2 id="room-title">Phòng: ---</h2>
+                <span id="participant-count">0 người tham gia</span>
+            </div>
+
+            <div id="video-grid" class="video-grid">
+            </div>
+
+            <div class="controls">
+                <button id="toggle-mic" class="control-btn">
+                    🎤 Mic
+                </button>
+                <button id="toggle-camera" class="control-btn">
+                    📷 Camera
+                </button>
+                <button id="toggle-screen" class="control-btn">
+                    🖥️ Chia sẻ màn hình
+                </button>
+                <button id="leave-btn" class="control-btn btn-danger">
+                    📴 Rời phòng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/livekit-client@2.0.0/dist/livekit-client.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
