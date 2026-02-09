@@ -1,9 +1,7 @@
 const { Room, RoomEvent, Track } = LivekitClient;
 
-// Cấu hình
-const BACKEND_URL = 'http://localhost:3000';
+const BACKEND_URL = 'https://nhom13-chieut6-videocall.onrender.com/';
 
-// Elements
 const joinForm = document.getElementById('join-form');
 const callSection = document.getElementById('call-section');
 const roomNameInput = document.getElementById('room-name');
@@ -17,13 +15,11 @@ const toggleCameraBtn = document.getElementById('toggle-camera');
 const toggleScreenBtn = document.getElementById('toggle-screen');
 const leaveBtn = document.getElementById('leave-btn');
 
-// State
 let currentRoom = null;
 let isMicEnabled = true;
 let isCameraEnabled = true;
 let isScreenSharing = false;
 
-// === Hàm lấy token từ backend ===
 async function getToken(roomName, participantName) {
     const response = await fetch(`${BACKEND_URL}/get-token`, {
         method: 'POST',
@@ -38,7 +34,6 @@ async function getToken(roomName, participantName) {
     return response.json();
 }
 
-// === Tham gia phòng ===
 async function joinRoom() {
     const roomName = roomNameInput.value.trim();
     const userName = userNameInput.value.trim();
@@ -52,27 +47,21 @@ async function joinRoom() {
     joinBtn.textContent = '⏳ Đang kết nối...';
 
     try {
-        // Lấy token
         const { token, url } = await getToken(roomName, userName);
 
-        // Tạo room instance
         currentRoom = new Room({
             adaptiveStream: true,
             dynacast: true,
         });
 
-        // Đăng ký các event handlers
         setupRoomEvents();
 
-        // Kết nối với LiveKit
         await currentRoom.connect(url, token);
 
         console.log('✅ Đã kết nối với phòng:', roomName);
 
-        // Bật camera và mic
         await currentRoom.localParticipant.enableCameraAndMicrophone();
 
-        // Hiển thị giao diện call
         showCallUI(roomName);
 
     } catch (error) {
@@ -83,21 +72,17 @@ async function joinRoom() {
     }
 }
 
-// === Setup Room Events ===
 function setupRoomEvents() {
-    // Khi có track mới được publish
     currentRoom.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
         console.log('📺 Track subscribed:', track.kind, 'from', participant.identity);
         attachTrack(track, participant);
     });
 
-    // Khi track bị unsubscribe
     currentRoom.on(RoomEvent.TrackUnsubscribed, (track, publication, participant) => {
         console.log('📺 Track unsubscribed:', track.kind);
         detachTrack(track, participant);
     });
 
-    // Khi local track được publish
     currentRoom.on(RoomEvent.LocalTrackPublished, (publication) => {
         const track = publication.track;
         if (track) {
@@ -105,27 +90,22 @@ function setupRoomEvents() {
         }
     });
 
-    // Khi có người tham gia
     currentRoom.on(RoomEvent.ParticipantConnected, (participant) => {
         console.log('👤 Người mới tham gia:', participant.identity);
         updateParticipantCount();
     });
-
-    // Khi có người rời đi
     currentRoom.on(RoomEvent.ParticipantDisconnected, (participant) => {
         console.log('👤 Người rời phòng:', participant.identity);
         removeParticipantVideo(participant.identity);
         updateParticipantCount();
     });
 
-    // Khi bị ngắt kết nối
     currentRoom.on(RoomEvent.Disconnected, (reason) => {
-        console.log('❌ Ngắt kết nối:', reason);
+        console.log('Ngắt kết nối:', reason);
         leaveRoom();
     });
 }
 
-// === Attach track vào UI ===
 function attachTrack(track, participant) {
     let container = document.getElementById(`video-${participant.identity}`);
 
@@ -137,7 +117,6 @@ function attachTrack(track, participant) {
         const videoElement = track.attach();
         videoElement.id = `video-element-${participant.identity}`;
 
-        // Xóa placeholder nếu có
         const placeholder = container.querySelector('.no-video-placeholder');
         if (placeholder) placeholder.remove();
 
@@ -173,7 +152,6 @@ function detachTrack(track, participant) {
     track.detach().forEach((element) => element.remove());
 }
 
-// === Tạo video container ===
 function createVideoContainer(identity, isLocal) {
     const container = document.createElement('div');
     container.id = `video-${identity}`;
@@ -199,7 +177,6 @@ function removeParticipantVideo(identity) {
     if (container) container.remove();
 }
 
-// === Hiển thị giao diện call ===
 function showCallUI(roomName) {
     joinForm.classList.add('hidden');
     callSection.classList.remove('hidden');
@@ -209,12 +186,10 @@ function showCallUI(roomName) {
 
 function updateParticipantCount() {
     if (currentRoom) {
-        const count = currentRoom.numParticipants + 1; // +1 cho local participant
+        const count = currentRoom.numParticipants + 1;
         participantCount.textContent = `${count} người tham gia`;
     }
 }
-
-// === Điều khiển ===
 async function toggleMic() {
     if (!currentRoom) return;
 
@@ -256,14 +231,12 @@ async function leaveRoom() {
         currentRoom = null;
     }
 
-    // Reset UI
     callSection.classList.add('hidden');
     joinForm.classList.remove('hidden');
     videoGrid.innerHTML = '';
     joinBtn.disabled = false;
-    joinBtn.textContent = '🚀 Tham gia phòng';
+    joinBtn.textContent = ' Tham gia phòng';
 
-    // Reset states
     isMicEnabled = true;
     isCameraEnabled = true;
     isScreenSharing = false;
@@ -275,14 +248,12 @@ async function leaveRoom() {
     toggleScreenBtn.classList.remove('active');
 }
 
-// === Event Listeners ===
 joinBtn.addEventListener('click', joinRoom);
 toggleMicBtn.addEventListener('click', toggleMic);
 toggleCameraBtn.addEventListener('click', toggleCamera);
 toggleScreenBtn.addEventListener('click', toggleScreenShare);
 leaveBtn.addEventListener('click', leaveRoom);
 
-// Cho phép Enter để join
 userNameInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') joinRoom();
 });
