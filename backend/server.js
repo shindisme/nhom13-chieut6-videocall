@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { AccessToken } = require('livekit-server-sdk');
@@ -7,9 +7,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// API tạo token để join room
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', message: 'LiveKit Video Call Backend - Nhóm 13' });
+});
+
 app.post('/get-token', async (req, res) => {
   const { roomName, participantName } = req.body;
 
@@ -35,7 +38,7 @@ app.post('/get-token', async (req, res) => {
     });
 
     const jwt = await token.toJwt();
-    
+
     res.json({
       token: jwt,
       url: process.env.LIVEKIT_URL,
@@ -47,6 +50,6 @@ app.post('/get-token', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server đang chạy tại http://localhost:${PORT}`);
+  console.log(`🚀 Server đang chạy tại port ${PORT}`);
   console.log(`LiveKit URL: ${process.env.LIVEKIT_URL}`);
 });

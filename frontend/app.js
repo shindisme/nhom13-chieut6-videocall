@@ -1,6 +1,6 @@
 const { Room, RoomEvent, Track } = LivekitClient;
 
-const BACKEND_URL = 'https://nhom13-chieut6-videocall.onrender.com/';
+const BACKEND_URL = 'https://nhom13-chieut6-videocall.onrender.com';
 
 const joinForm = document.getElementById('join-form');
 const callSection = document.getElementById('call-section');
